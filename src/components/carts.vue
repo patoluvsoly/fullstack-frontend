@@ -1,0 +1,45 @@
+<script setup>
+import{ useCartStore } from '../stores/cart'
+const cartStore = useCartStore()
+const cart = cartStore.cart
+</script>
+
+<template>
+    <v-container>
+        <v-row>
+            <v-col md="12">
+                <div class="text-display-medium mb-12 mt-12 text-center">
+                    Your Orders
+                </div>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col md="12" v-for="(item, index) in cart" :key="index">
+                <v-card color="primary">
+                    <v-row>
+                        <v-col md="4" class="text-center">
+                            <v-avatar color="grey" rounded="0" size="150" >
+                                <v-img :src="item.Image" ></v-img>
+                            </v-avatar>
+                        </v-col>
+                        <v-col md="6" class="text-right">
+                                <v-card-item>
+                                    <v-card-title class="mb-4">{{ item.name }}</v-card-title>
+                                    <v-card-subtitle>Ksh {{ item.price }}</v-card-subtitle>
+                                    <v-card-subtitle>Quantity {{ item.quantity }}</v-card-subtitle>
+                                    <v-card-text>Total:{{ item.price * item.quantity}} </v-card-text>
+                                </v-card-item>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" elevation="4" variant="elevated" @click="cartStore.removeFromCart(item.name)"> Remove </v-btn>
+                                    <v-btn color="white" elevation="4" variant="elevated"> Checkout </v-btn>
+                                </v-card-actions>
+                        </v-col>
+                    </v-row>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
+    
+    
+</template>
