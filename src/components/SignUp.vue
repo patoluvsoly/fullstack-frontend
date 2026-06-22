@@ -9,7 +9,7 @@ const showConfirm = ref(false)
 const rules = {
     required: value => !!value || 'Required.', //if statements
     min: v => v.length >= 8 || 'Min 8 characters', // if statements
-    passwordMatch: () => password == confirmPassword || 'Passwords must match' //function to check if password and confirm password match
+    passwordMatch: () => password.value === confirmPassword.value || 'Passwords must match' //function to check if password and confirm password match
   } //validation rules for password fields
 
 //data models
@@ -79,7 +79,7 @@ function register()
                                 <div>Location</div>
                             </v-col>
                             <v-col md="3">
-                                <v-select v-model="location" :items="['Nairobi', 'Mombasa', 'Kisumu', 'Eldoret', 'Ruiru']"></v-select>
+                                <v-select v-model="location" :items="['Nairobi', 'Mombasa', 'Kisumu', 'Eldoret', 'Ruiru']" label="Select your location"></v-select>
                             </v-col>
                             <v-col md="3">
                                 <div>Address</div>
@@ -106,14 +106,14 @@ function register()
                                 <div>Confirm Password</div>
                             </v-col>
                             <v-col md="3">
-                                	<v-text-field 
-                                v-model="confirmPassword"
-                                :append-icon="showConfirm ? 'mdi-eye' : 'mdi-eye-off'"
-                                :rules="[rules.required, rules.min, rules.passwordMatch,]"
-                                :type="showConfirm ? 'text' : 'password'"
-                                variant="outlined"
-                                @click:append="showConfirm = !showConfirm"
-                            ></v-text-field>
+                                <v-text-field 
+                                    v-model="confirmPassword"
+                                    :append-icon="showConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+                                    :rules="[rules.required, rules.min, rules.passwordMatch,]"
+                                    :type="showConfirm ? 'text' : 'password'"
+                                    variant="outlined"
+                                    @click:append="showConfirm = !showConfirm"
+                                ></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
