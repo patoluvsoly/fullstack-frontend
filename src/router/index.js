@@ -8,7 +8,7 @@ import Admin from '@/components/Admin.vue'
 import Wishlist from '@/components/Wishlist.vue'
 import ViewBooks from '@/components/ViewBooks.vue'
 import signup from '@/components/SignUp.vue' 
-
+import login from '@/components/Login.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +48,10 @@ const router = createRouter({
     {
       path: '/signup',
       component: signup
+    },
+    {
+      path: '/login',
+      component: login
     }
   ],
 })

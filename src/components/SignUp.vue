@@ -1,5 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import {useAuth} from '../services/auth'
+import { useRouter } from "vue-router"
+const router = useRouter()
+
+const { signup } = useAuth()
+
 
 const showPassword = ref(false) //controls visibility of password field
 const password = ref(null) //model for password field
@@ -30,12 +36,15 @@ function register()
         location: location.value,
         address: address.value,
         password: password.value,
+        role: 2,
+
+        //role 1 is for admin, role 2 is for customer
     }
-    try{
-        localStorage.setItem("user", JSON.stringify(data)) //store user data in local storage
-    }catch{
-        console.log("Error signing up")
-    }
+
+    signup(data)
+    router.push('/').then(() => {
+        router.go(0) 
+    });
 }
 
 </script>
@@ -45,6 +54,9 @@ function register()
         <v-row>
             <v-col>
                 <v-card max-width="80%" class="bg-secondary">
+                    <v-img src="/logo.png" height="150" width="250" class="mt-4"></v-img>
+                    <v-card-title class="text-h4 text-center">Sign Up</v-card-title>
+                    <v-divider></v-divider>
                     <v-form class="mt-12 mb-6">
                         <v-row>
                             <v-col md="3">
@@ -118,12 +130,11 @@ function register()
                         </v-row>
                         <v-row>
                             <v-col md="6">
-                                <v-btn @click="register()" variant="elevated">Sign Up</v-btn>
+                                <v-btn @click="register()" block>Sign Up</v-btn>
                             </v-col>
                             <v-col md="6">
                                 <v-text>Already have an account? <v-btn color="primary" variant="text" to="/login">Login</v-btn></v-text>
-                            </v-col>
-                                
+                            </v-col>                          
 
                         </v-row>
                     </v-form>
