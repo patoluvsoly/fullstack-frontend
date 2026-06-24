@@ -19,7 +19,7 @@ const user = JSON.parse(localStorage.getItem('user'))
                     <!-- Avatar Section -->
                     <div class="avatar-section text-center py-8">
                         <v-avatar image="logo.png" size="120" class="avatar-large"></v-avatar>
-                        <div class="text-h5 font-weight-bold text-white mt-4">{{ user.firstname }} {{ user.lastname }}</div>
+                        <div class="text-h10 font-weight-bold text-white mt-4">{{ user.firstname }} {{ user.lastname }}</div>
                     </div>
 
                     <v-card-item class="py-8">
@@ -92,7 +92,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 }
 
 .profile-card:hover {
-    box-shadow: 0 12px 28px orangered !important;
+    box-shadow: 0 12px 28px rgba(214, 189, 180, 0.936) !important;
 }
 
 .avatar-section {
@@ -102,7 +102,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 }
 
 .avatar-large {
-    border: 4px solid white;
+    border: 4px solid burlywood;
     box-shadow: 0 4px 12px orangered
 }
 
@@ -114,7 +114,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 }
 
 .info-item:hover {
-    background: orangered;
+    background: rgba(214, 189, 180, 0.936);
     transform: translateY(-2px);
 }
 </style>

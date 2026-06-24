@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const { logout } = useAuth()
+const isAdmin = localStorage.getItem('isAdmin') === 'true'
 const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
 const user = JSON.parse(localStorage.getItem('user'))
 
