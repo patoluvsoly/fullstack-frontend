@@ -11,6 +11,19 @@ const ordersStore = useOrdersStore()
 const books= booksStore.books
 const users = usersStore.users
 const orders = ordersStore.orders
+//map helps to access each nested object using Object.value
+const allOrders = Object.values(orders).map(order => { 
+    const book = Object.values(books).find(book => book.id === order.book_id);
+    const user = Object.values(users).find(user => user.id === order.customer_id);
+  return {
+    ...order,
+    // ?: tenary operator is the same as a conditional statement
+    customer: user ? user.firstName + ' '+  user.lastName: 'Unknown User',
+    bookName: book ? book.name : 'Unknown Book',
+    price: book ? book.price : '0'
+    
+  };
+});
 
 const tab = ref(null)
 
@@ -162,12 +175,12 @@ const tab = ref(null)
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="item in orders" :key="item.id" >
+                                    <tr v-for="item in allOrders" :key="item.id" >
                                         <td>{{ item.customer }}</td>
                                         <td>{{ item.book }}</td>
                                         <td>{{ item.price }}</td>
                                         <td>{{ item.quantity }}</td>
-                                        <td>{{ item.total }}</td>
+                                        <td>{{ item.total_paid }}</td>
                                         <td>{{ item.status }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
                                         <td> <v-btn color="green" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
