@@ -17,7 +17,7 @@ const user = JSON.parse(localStorage.getItem('user'))
             <v-col md="12">
                 <v-card elevation="4" class="profile-card">
                     <!-- Avatar Section -->
-                    <div class="avatar-section text-center py-8" style="background: linear-gradient(135deg, #FF8C00 0%, #FF7B02 100%);">
+                    <div class="avatar-section text-center py-8">
                         <v-avatar image="logo.png" size="120" class="avatar-large"></v-avatar>
                         <div class="text-h5 font-weight-bold text-white mt-4">{{ user.firstname }} {{ user.lastname }}</div>
                     </div>
@@ -92,17 +92,18 @@ const user = JSON.parse(localStorage.getItem('user'))
 }
 
 .profile-card:hover {
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 12px 28px orangered !important;
 }
 
 .avatar-section {
     border-radius: 16px 16px 0 0;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 8px orangered;
+    background: orangered;
 }
 
 .avatar-large {
     border: 4px solid white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px orangered
 }
 
 .info-item {
@@ -113,7 +114,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 }
 
 .info-item:hover {
-    background: #eeeeee;
+    background: orangered;
     transform: translateY(-2px);
 }
 </style>
