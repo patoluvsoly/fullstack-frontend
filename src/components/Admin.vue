@@ -1,24 +1,26 @@
 <script setup>
 import {ref} from 'vue'
 import { useBooksStore } from '../stores/books'
-import { useUsersStore } from '@/stores/users'
-import { useOrdersStore } from '@/stores/orders'
+import { useUsersStore } from '../stores/users'
+import { useOrdersStore } from '../stores/orders'
 
 const booksStore = useBooksStore()
 const usersStore = useUsersStore()
 const ordersStore = useOrdersStore()
 
-const books= booksStore.books
+const books = booksStore.books
 const users = usersStore.users
 const orders = ordersStore.orders
-//map helps to access each nested object using Object.value
+
+//map help to access each nested object using Object.values
 const allOrders = Object.values(orders).map(order => { 
     const book = Object.values(books).find(book => book.id === order.book_id);
     const user = Object.values(users).find(user => user.id === order.customer_id);
   return {
     ...order,
-    // ?: tenary operator is the same as a conditional statement
-    customer: user ? user.firstName + ' '+  user.lastName: 'Unknown User',
+
+    // ?: tenary operator is the same as a conditional statemnt.
+    customer: user ? user.firstname + ' '+  user.lastname: 'Unknown User',
     bookName: book ? book.name : 'Unknown Book',
     price: book ? book.price : '0'
     
@@ -26,14 +28,18 @@ const allOrders = Object.values(orders).map(order => {
 });
 
 const tab = ref(null)
+const refreshKey = ref(0);
 const showAddBookDialog = ref(false)
 const showEditBookDialog = ref(false)
 const showAddUserDialog = ref(false)
 const showEditUserDialog = ref(false)
 
 //books
+//1. create model
+//2. create a functino to add new book
+//3. create the add book form
 
-
+// book models
 const bookId = ref(null)
 const bookName = ref(null)
 const price = ref(null)
@@ -44,29 +50,26 @@ const image = ref(null)
 const author = ref(null)
 const rating = ref(null)
 
-//add new book
+// add new book
 function addBook(){
     const bookData = {
         bookId: bookId.value,
-        bookName: bookName.value,
+        name: bookName.value, //changed this
         price: price.value,
-        description: description.value,
+        description:description.value,
         long_description: long_description.value,
         genre: genre.value,
         image: image.value,
         author: author.value,
-        rating: rating.value
-
+        rating: rating.value,
     }
-    //to do: update books in the store
-    const updatedBook = {
-        ...books,
-        14: bookData
-    }
+    //update books in the store
+     booksStore.addBook(bookData)
+     close() 
 }
 
-// edit book
-function editBook(book){     
+//edit book 
+function editBook(book){
     bookId.value = book.id
     bookName.value = book.name
     price.value = book.price
@@ -76,38 +79,45 @@ function editBook(book){
     image.value = book.image
     author.value = book.author
     rating.value = book.rating
-    showEditBookDialog.value = true         
+    showEditBookDialog.value = true
 }
 function updateBook(){
-     const bookData = {
+    const bookData = {
         bookId: bookId.value,
-        bookName: bookName.value,
+        name: bookName.value,
         price: price.value,
-        description: description.value,
+        description:description.value,
         long_description: long_description.value,
         genre: genre.value,
         image: image.value,
         author: author.value,
-        rating: rating.value
+        rating: rating.value,
     }
-    // to do update book
 
+    //to do: update book
+    booksStore.edit(bookId.value, bookData)
     close()
+    refreshKey.value += 1
 
 }
+//delete
+function destroyBook(id){
+    booksStore.deleteBook(id);
+    refreshKey.value += 1;
+}
 
-// user models
+//user models
 const userId = ref(null)
-const firstname = ref(null)
-const lastname = ref(null)
-const email = ref(null)
-const phone = ref(null)
-const location = ref(null)
-const address = ref(null)
+const firstname= ref(null)
+const lastname= ref(null)
+const email= ref(null)
+const phone= ref(null)
+const location= ref(null)
+const address= ref(null)
 
-// add user
+//add user
 function addUser(){
-     const data = {
+    const data = {
         userId: userId.value,
         firstname: firstname.value,
         lastname: lastname.value,
@@ -115,13 +125,15 @@ function addUser(){
         phone: phone.value,
         location: location.value,
         address: address.value,
-        password: "123456789",
-        role: 2,        
+        password: "strawhat7..",
+        role: 2,
     }
-    // to do : add user
+    //add user
+    usersStore.addUser(data)
     close()
 }
-// edit user
+
+//edit user
 function editUser(user){
     userId.value = user.id
     firstname.value = user.firstname
@@ -131,9 +143,9 @@ function editUser(user){
     location.value = user.location
     address.value = user.address
     showEditUserDialog.value = true
-
 }
-// update user
+
+//update user 
 function updateUser(){
     const data = {
         userId: userId.value,
@@ -143,11 +155,19 @@ function updateUser(){
         phone: phone.value,
         location: location.value,
         address: address.value,
-        password: "123456789",
-        role: 2,        
+        password: "strawhat7..",
+        role: 2,
     }
-    // to do : edit user
+    //edit user
+    usersStore.editUser(userId.value, data)
+    refreshKey.value += 1
     close()
+}
+
+//delete user
+function destroyUser(id){
+    usersStore.deleteUser(id);
+    refreshKey.value += 1;
 }
 
 function close(){
@@ -155,32 +175,31 @@ function close(){
     bookId.value = null
     bookName.value = null
     price.value = null
-    description.value = null
-    long_description.value = null
-    genre.value = null
+    description.value = null 
+    long_description.value = null 
+    genre.value = null 
     image.value = null
     author.value = null
     rating.value = null
     showAddBookDialog.value = false
     showEditBookDialog.value = false
 
-    // user
+    //user
     userId.value = null
     firstname.value = null
     lastname.value = null
     email.value = null
     phone.value = null
     location.value = null
-    address.value = null
-    showAddUserDialog.value = false
-    showEditUserDialog.value = false
-    
+    address.value= null
+    showAddUserDialog.value = false 
+    showEditUserDialog.value = false 
 }
 
 </script>
 
 <template>
-    <v-container class="text-center mt-12 bg-secondary">
+    <v-container class=" mt-12 bg-secondary" :key="refreshKey">
         <v-card>
             <v-tabs v-model="tab" align-tabs="center" color="primary" >
                 <v-tab :value="1">Books</v-tab>
@@ -189,6 +208,7 @@ function close(){
             </v-tabs>
 
             <v-tabs-window v-model="tab">
+
                 <!-- Books -->
                 <v-tabs-window-item :value="1">
                     <div v-if="books == null||books==undefined||Object.keys(books).length == 0" align="center">
@@ -222,13 +242,13 @@ function close(){
                                 </thead>
                                 <tbody>
                                     <tr v-for="item in books" :key="item.id" >
-                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.name  }}</td>
                                         <td>{{ item.price }}</td>
                                         <td>{{ item.author }}</td>
                                         <td>{{ item.genre }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
-                                        <td> <v-btn color="green" size="small" @click="editBook(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        <td> <v-btn color="primary" size="small" @click="editBook(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
+                                        <td> <v-btn color="error" size="small" @click="destroyBook(item.id)"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
                                     </tr>
                                 </tbody>
                             </v-table>
@@ -237,120 +257,120 @@ function close(){
                         </v-container>
                     </div>
                 </v-tabs-window-item>
-                      
-                <!-- users -->
+            
+                <!-- Users -->
                 <v-tabs-window-item :value="2">
-                    <div v-if="users == null||users==undefined||Object.keys(users).length == 0" align="center">
-                        <v-row>
-                            <v-col cols="12" md="6" sm="12" >
-                                <div class="text-h6">No users found</div>
-                            </v-col>
-                            <v-col cols="12" md="6" sm="12" >
-                                <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddUserDialog = true"></v-btn>
-                            </v-col>
-                        </v-row>
-                    </div>
-                    <div v-else>
-                        <v-container>
+                        <div v-if="users == null||users==undefined||Object.keys(users).length == 0" align="center">
                             <v-row>
-                                <v-col cols="12" md="12" sm="12" align="right">
+                                <v-col cols="12" md="6" sm="12" >
+                                    <div class="text-h6">No users found</div>
+                                </v-col>
+                                <v-col cols="12" md="6" sm="12" >
                                     <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddUserDialog = true"></v-btn>
                                 </v-col>
                             </v-row>
-                        <v-row>
-                        <v-col>
-                            <v-table class="border">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left"> First Name </th>
-                                        <th class="text-left"> Last Name </th>
-                                        <th class="text-left"> Email </th>
-                                        <th class="text-left"> Phone </th>
-                                        <th class="text-left"> Location </th>
-                                        <th class="text-left"> Address </th>
-                                        <th class="text-center" colspan="3"> Action </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="item in users" :key="item.id" >
-                                        <td>{{ item.firstName }}</td>
-                                        <td>{{ item.lastName }}</td>
-                                        <td>{{ item.email }}</td>
-                                        <td>{{ item.phone }}</td>
-                                        <td>{{ item.location }}</td>
-                                        <td>{{ item.address }}</td>
-                                        <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
-                                        <td> <v-btn color="green" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
-                        </v-col>
-                    </v-row>
-                        </v-container>
-                    </div>
-                </v-tabs-window-item>
-
-                <!-- orders -->
-                <v-tabs-window-item :value="3">
-                    <div v-if="orders == null||orders==undefined||Object.keys(orders).length == 0" align="center">
-                        <v-row>
-                            <v-col cols="12" md="6" sm="12" >
-                                <div class="text-h6">No orders found</div>
-                            </v-col>
-                            <v-col cols="12" md="6" sm="12" >
-                                <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddcartDialog = true"></v-btn>
+                        </div>
+                        <div v-else>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12" md="12" sm="12" align="right">
+                                        <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddUserDialog = true"></v-btn>
+                                    </v-col>
+                                </v-row>
+                            <v-row>
+                            <v-col>
+                                <v-table class="border">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left"> First Name </th>
+                                            <th class="text-left"> Last Name </th>
+                                            <th class="text-left"> Email </th>
+                                            <th class="text-left"> Phone </th>
+                                            <th class="text-left"> Location </th>
+                                            <th class="text-left"> Address </th>
+                                            <th class="text-center" colspan="3"> Action </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in users" :key="item.id" >
+                                            <td>{{ item.firstname }}</td>
+                                            <td>{{ item.lastname }}</td>
+                                            <td>{{ item.email }}</td>
+                                            <td>{{ item.phone }}</td>
+                                            <td>{{ item.location }}</td>
+                                            <td>{{ item.address }}</td>
+                                            <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
+                                            <td> <v-btn color="primary" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
+                                            <td> <v-btn color="error" size="small" @click="destroyUser(item.id)"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        </tr>
+                                    </tbody>
+                                </v-table>
                             </v-col>
                         </v-row>
-                    </div>
-                    <div v-else>
-                        <v-container>
+                            </v-container>
+                        </div>
+                </v-tabs-window-item>
+
+                <!-- Orders -->
+                <v-tabs-window-item :value="3">
+                        <div v-if="orders == null||orders==undefined||Object.keys(orders).length == 0" align="center">
                             <v-row>
-                                <v-col cols="12" md="12" sm="12" align="right">
-                                    <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddcartDialog = true"></v-btn>
+                                <v-col cols="12" md="6" sm="12" >
+                                    <div class="text-h6">No orders found</div>
+                                </v-col>
+                                <v-col cols="12" md="6" sm="12" >
+                                    <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddUserDialog = true"></v-btn>
                                 </v-col>
                             </v-row>
-                        <v-row>
-                        <v-col>
-                            <v-table class="border">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left"> Customer </th>
-                                        <th class="text-left"> Book </th>
-                                        <th class="text-left"> Price </th>
-                                        <th class="text-left"> Quantity </th>
-                                        <th class="text-left"> Total </th>
-                                        <th class="text-left"> Status </th>
-                                        <th class="text-center" colspan="3"> Action </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="item in allOrders" :key="item.id" >
-                                        <td>{{ item.customer }}</td>
-                                        <td>{{ item.book }}</td>
-                                        <td>{{ item.price }}</td>
-                                        <td>{{ item.quantity }}</td>
-                                        <td>{{ item.total_paid }}</td>
-                                        <td>{{ item.status }}</td>
-                                        <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
-                                        <td> <v-btn color="green" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
-                        </v-col>
-                    </v-row>
-                        </v-container>
-                    </div>
+                        </div>
+                        <div v-else>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12" md="12" sm="12" align="right">
+                                        <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddUserDialog = true"></v-btn>
+                                    </v-col>
+                                </v-row>
+                            <v-row>
+                            <v-col>
+                                <v-table class="border">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left"> Customer </th>
+                                            <th class="text-left"> Book </th>
+                                            <th class="text-left"> Price </th>
+                                            <th class="text-left"> Quantity </th>
+                                            <th class="text-left"> Total </th>
+                                            <th class="text-left"> Status </th>
+                                            <th class="text-center" colspan="3"> Action </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in allOrders" :key="item.id" >
+                                            <td>{{ item.customer }}</td>
+                                            <td>{{ item.book }}</td>
+                                            <td>{{ item.price }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ item.total_paid }}</td>
+                                            <td>{{ item.status }}</td>
+                                            <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
+                                            <td> <v-btn color="primary" size="small" @click="editBook(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
+                                            <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        </tr>
+                                    </tbody>
+                                </v-table>
+                            </v-col>
+                        </v-row>
+                            </v-container>
+                        </div>
                 </v-tabs-window-item>
+
             </v-tabs-window>
-            
         </v-card>
     </v-container>
-     <!-- dialogue -->
-      <!-- book dialogue -->
-       <!-- add book -->
-       <v-dialog v-model="showAddBookDialog" max-width="600">
+    <!-- Dialogs -->
+    <!-- Book Dialog -->
+    <!-- Add Book -->
+     <v-dialog v-model="showAddBookDialog" max-width="600">
         <v-form @submit.prevent >
             <v-card>
                 <v-card-title class="pa-6">
@@ -403,9 +423,8 @@ function close(){
         </v-form>
     </v-dialog>
 
-
-       <!-- edit book-->
-       <v-dialog v-model="showEditBookDialog" max-width="600">
+    <!-- Edit Book -->
+     <v-dialog v-model="showEditBookDialog" max-width="600">
         <v-form @submit.prevent >
             <v-card>
                 <v-card-title class="pa-6">
@@ -452,21 +471,19 @@ function close(){
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Close" variant="plain" @click="close()" ></v-btn>
-                    <v-btn color="primary"  text="update" variant="tonal" @click="updateBook()" ></v-btn>
+                    <v-btn color="primary"  text="Update" variant="tonal" @click="updateBook()" ></v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
     </v-dialog>
 
-    <!-- user dialog -->
-     <!-- add user -->
-       <!-- Add User -->
-    <v-dialog v-model="showAddUserDialog" max-width="600">
+    <!-- User Dialogs -->
+     <!-- Add User -->
+      <v-dialog v-model="showAddUserDialog" max-width="600">
         <v-form @submit.prevent >
             <v-card>
                 <v-card-title class="pa-6">
-                <v-row>              
-
+                <v-row>            
                         Add User
                         <v-spacer></v-spacer>
                         <v-btn class="ma-2" color="blue-darken-2" icon="mdi-close" @click="close();"></v-btn>
@@ -507,14 +524,14 @@ function close(){
             </v-card>
         </v-form>
     </v-dialog>
-    <!-- edit user -->
-        <v-dialog v-model="showEditUserDialog" max-width="600">
+
+    <!-- Edit User -->
+      <v-dialog v-model="showEditUserDialog" max-width="600">
         <v-form @submit.prevent >
             <v-card>
                 <v-card-title class="pa-6">
-                <v-row>              
-
-                        Edit User
+                <v-row>            
+                        Add User
                         <v-spacer></v-spacer>
                         <v-btn class="ma-2" color="blue-darken-2" icon="mdi-close" @click="close();"></v-btn>
                     </v-row>
@@ -549,7 +566,7 @@ function close(){
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Close" variant="plain" @click="close()" ></v-btn>
-                    <v-btn color="primary"  text="save" variant="tonal" @click="updateUser()" ></v-btn>
+                    <v-btn color="primary"  text="Save" variant="tonal" @click="updateUser()" ></v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
